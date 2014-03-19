@@ -1,0 +1,55 @@
+<!doctype HTML>
+<html>
+  <head>
+    <style> div {
+      border: black dotted 2px;
+      min-height: 200px;
+      padding: 25px;
+      }
+      .pink{
+        background-color: pink;
+      }
+      </style>
+  </head>
+  <body>
+    <div class="grandparent">
+      <div class="parent">
+        <div class="baby">
+        </div>
+        <div class="sister">
+        </div>
+      </div>
+    </div>
+    <div class="links">
+      <a href="good">Good!</a>
+      <a href="evil">Evil!</a>
+    </div>
+    <button id="1">Highlight Grandparent</button>
+    <button id="2">Highlight Parent</button>
+    <button id="3">Highlight Baby</button>
+    <button id="getData">Stuff</button>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script>
+      $("#3").on("click", function(){
+        $(".parent").children().addClass("pink");
+        if($(".baby").hasClass("pink")){
+          $(this).text("Reset Children");
+        }else{
+          $(this).text("Highlight Children");
+        }
+       });
+      $("#getData").on("click",{
+        datum: "the biggest data!"
+      }, function(event){
+        console.log(event.data.datum);
+      });
+
+      $("a").on("click", function(e){
+        var $this = $(this);
+        if($this.attr("href").match("evil")){
+          e.preventDefault();
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,104 @@
+git clone url
+git remote -v
+git clone old-url new_name
+git branch cat
+git checkout cat
+ls la
+git checkout master
+git merge cat
+git branch -d cat
+git checkout -b admin
+git checkout master
+git branch
+git pull
+git checkout master
+git merge admin
+git log
+
+git pull
+git push
+
+git checkout -b shopping_cart
+git oush origin shopping_cart
+git branch -r
+git checkout shopping_cart
+git remote show origin
+git push origin :shopping_cart
+git branch -d shopping_cart
+git remote prune origin
+git push heroku-staging staging:master
+git tag
+git tag -a v0.0.3
+
+git fetch
+git rebase
+git checkout admin
+git rebase master
+git checkout master
+git merge admin
+git rebase --continue
+
+git log
+git config --global color.ui true
+git log --pretty=oneline
+git log --pretty=format
+git log --oneline --stat
+git log --oneline --graph
+git log --until or --since
+git diff
+git diff HEAD^^^^
+git diff HEAD^ .. HEAD
+git diff master other_branch
+git blame file.type
+
+git exclude/info
+.gitignore
+logs/*.log
+
+
+
+git rm file_to_delete
+git rm --cached file_to_untrack
+then add to .gitignore
+git config --global alias.something what_it_repplaces
+
+def call_this_block_twice
+  yield
+  yield
+end
+
+my_proc = Proc.new {does_stuff_here}
+
+my_proc = lambda {does_stuff_here}
+
+my_proc = -> {does_stuff_here}
+
+to convert to a block use &
+
+optional blocks
+uses block_given?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
