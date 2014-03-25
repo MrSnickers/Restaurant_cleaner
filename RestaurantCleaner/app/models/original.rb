@@ -1,4 +1,5 @@
 class Restaurant < ActiveRecord::Base
+  # attr_accessible :name, :street_address, :zip, :cuisine, :inspection_date, :violation, :current_grade
 
    VIOLATIONS = {
     "04L" => "Rats!",
@@ -104,55 +105,46 @@ class Restaurant < ActiveRecord::Base
     "99"=>"Other",
     "00"=>"Not Listed/Not Applicable" }
 
-  USEFUL_DATA = [1, 3, 4, 5, 7, 8, 10, 12]
-  COLUMN_NAMES = [:name, :street_address, :zip, :cuisine, :inspection_date, :violation, :current_grade]
-
-  def self.namify(element)
-    element.split(" ").each{|word| word.capitalize!}.join(' ')
-  end
-
-  def self.formatted_restaurant(line)
-      temp_hash = {}
-      element_array = line.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '').split("\",\"")
-      element_array.map!{|item| item.gsub("   ", " ").gsub("  ", " ").strip}
-
-      element_array[1] ? temp_hash[:name] = namify(element_array[1]) : return
-
-      element_array[3]&&element_array[4] ? temp_hash[:street_address] = element_array[3].concat(" " + namify(element_array[4])) : return
-
-      temp_hash[:zip] = element_array[5]
-
-      temp_hash[:cusine] = CUISINE[element_array[7]]
-
-      Time.parse(element_array[8]) > 6.months.ago ? temp_hash[:inspection_date] = element_array[8] : return
-
-      if VIOLATIONS.include?(element_array[10])
-        temp_hash[:violation] = VIOLATIONS[element_array[10]]
-      elsif element_array[10] == ""
-        temp_hash[:violation] = "NONE"
-      else
-        temp_hash[:violation] = "boring"
-      end
-
-      if element_array[12] == ""
-        return
-      elsif element_array[12] == "P" || element_array[12] == "Z"
-        temp_hash[:current_grade] = "Pending"
-      else
-        temp_hash[:current_grade] = element_array[12]
-      end
-
-      temp_hash
-  end
-
   def self.make_restaurant_json
     start = Time.now
+    desired_data = [1, 3, 4, 5, 7, 8, 10, 12]
+    column_names = [:name, :street_address, :zip, :cuisine, :inspection_date, :violation, :current_grade]
     formatted_array = []
+
     rows = File.open("#{Rails.public_path}/data/Inspections.txt").readlines
     rows.shift
     rows.each do |line|
-      new_restaurant = formatted_restaurant(line)
-      formatted_array << new_restaurant if new_restaurant
+      temp_array = []
+      temp_hash = {}
+      is_complete = true
+      element_array = line.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '').split("\",\"")
+      element_array.each_with_index do |data_element, index|
+        is_complete = false if (data_element == "" && index != 10)
+        if desired_data.include?(index) && is_complete
+          data_element = data_element.gsub("   ", " ").gsub("  ", " ").strip
+          case index
+            when 4
+              temp_array[1].concat(" " + data_element)
+            when 7
+              data_element = CUISINE[data_element]
+            when 8
+              is_complete = false unless Time.parse(data_element) > 6.months.ago
+            when 10
+              if VIOLATIONS.include?(data_element)
+                data_element = VIOLATIONS[data_element]
+              elsif data_element == ""
+                data_element = "NONE"
+              else
+                data_element = "boring"
+              end
+            when 12
+              data_element = "Pending" if data_element == "P" || data_element == "Z"
+          end
+          temp_array << data_element unless index == 4
+        end
+      end
+      temp_array.each_with_index {|item, index| temp_hash[column_names[index]] = item}
+      formatted_array << temp_hash if is_complete
     end
     final = Time.now
     puts start
